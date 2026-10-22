@@ -1,6 +1,6 @@
 # Docker Sandboxes (sbx) slides
 
-A 25-slide talk on running AI coding agents in Docker Sandboxes: why isolation matters, how the security layers work, workspace modes, and a quick start with the [keystone-bedrock-kit](https://github.com/fandango/keystone-bedrock-kit).
+A 23-slide talk on running AI coding agents in Docker Sandboxes: why isolation matters, how the security layers work, workspace modes, and a quick start with the [keystone-bedrock-kit](https://github.com/fandango/keystone-bedrock-kit).
 
 Plain HTML, CSS, and JS. No build step, no dependencies.
 

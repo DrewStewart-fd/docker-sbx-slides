@@ -206,39 +206,7 @@ npm test
   </aside>
 </section>
 
-<!-- 9 · Untrusted model -->
-<section class="slide">
-  <p class="kicker">Background example</p>
-  <h2>Loading an untrusted model</h2>
-  <p>Say you pull a model from Hugging Face to try it out. Loading a model normally just reads weights, but <code>trust_remote_code=True</code> tells the library to run Python code shipped inside the model repo, and older pickle weight files can execute code the moment they load.</p>
-  <p class="muted">A malicious repo can use either path to read your cloud credentials, SSH keys, or source code, and send them out. Where that code runs decides how much it can reach.</p>
-  <div class="grid3 mt">
-    <div class="card bad">
-      <h3>Your machine</h3>
-      <p>The code runs as <em>you</em>. It can read <code>~/.aws/credentials</code>, <code>~/.ssh</code>, and your projects, and it can reach any server on the internet.</p>
-    </div>
-    <div class="card warn">
-      <h3>Plain container</h3>
-      <p>Better: it only sees what you mount. But it shares your host kernel, outbound network is open by default, and anything mounted read-write can be changed.</p>
-    </div>
-    <div class="card ok">
-      <h3>SBX sandbox</h3>
-      <ul>
-        <li>Own kernel, so an exploit lands in the VM</li>
-        <li>Sees only the mounted workspace</li>
-        <li>Outbound goes through the proxy, deny-by-default</li>
-        <li>Your API keys are never inside</li>
-      </ul>
-    </div>
-  </div>
-  <p class="mt"><span class="tag">Caveat</span> A direct workspace mount is read-write. Use <code>--clone</code> so the agent works on a private copy, and review changes before running anything it touched.</p>
-  <aside class="notes">
-    <p>This slide is general ML security knowledge, not from the Docker docs.</p>
-    <p>Ties back to the opening scenario: different trigger (a model file instead of a README), same outcome without isolation, same protections with it.</p>
-  </aside>
-</section>
-
-<!-- 10 · Five layers -->
+<!-- 9 · Five layers -->
 <section class="slide">
   <p class="kicker">Security model</p>
   <h2>Five layers of isolation</h2>
@@ -298,7 +266,7 @@ npm test
   </aside>
 </section>
 
-<!-- 11 · Credential flow -->
+<!-- 10 · Credential flow -->
 <section class="slide">
   <p class="kicker">Credential isolation</p>
   <h2>The key is added after the request leaves the VM</h2>
@@ -342,7 +310,7 @@ npm test
   </aside>
 </section>
 
-<!-- 12 · sbx secret -->
+<!-- 11 · sbx secret -->
 <section class="slide">
   <p class="kicker">Credential isolation</p>
   <h2>Storing keys with <code>sbx secret</code></h2>
@@ -378,7 +346,7 @@ sbx secret rm                               <span class="c"># remove a secret</s
   </aside>
 </section>
 
-<!-- 13 · Network policy -->
+<!-- 12 · Network policy -->
 <section class="slide">
   <p class="kicker">Network isolation</p>
   <h2>Deny-by-default, with a log</h2>
@@ -411,7 +379,7 @@ sbx policy check                                            <span class="c"># wo
   </aside>
 </section>
 
-<!-- 14 · Workspace modes -->
+<!-- 13 · Workspace modes -->
 <section class="slide">
   <p class="kicker">Workspace modes</p>
   <h2>How code gets into the sandbox</h2>
@@ -451,7 +419,7 @@ sbx cp ./src/ scratch:/home/agent/workspace/src   <span class="c"># copy files i
   </aside>
 </section>
 
-<!-- 15 · Workspace risks -->
+<!-- 14 · Workspace risks -->
 <section class="slide">
   <p class="kicker">Workspace modes</p>
   <h2>What still needs your attention</h2>
@@ -484,7 +452,7 @@ git status                 <span class="c"># untracked files</span></pre>
   </aside>
 </section>
 
-<!-- 16 · Agents -->
+<!-- 15 · Agents -->
 <section class="slide">
   <p class="kicker">Supported agents</p>
   <h2>Supported agents, and the one we use</h2>
@@ -516,7 +484,7 @@ git status                 <span class="c"># untracked files</span></pre>
   </aside>
 </section>
 
-<!-- 17 · sbxenv -->
+<!-- 16 · sbxenv -->
 <section class="slide">
   <p class="kicker">Configuring a project <span class="tag">Experimental</span></p>
   <h2>Repeatable setups with <code>sbxenv.yaml</code></h2>
@@ -547,7 +515,7 @@ ports:
   </aside>
 </section>
 
-<!-- 18 · Kits -->
+<!-- 17 · Kits -->
 <section class="slide">
   <p class="kicker">Customizing <span class="tag">Experimental</span></p>
   <h2>Kits package tools and config</h2>
@@ -581,7 +549,7 @@ sbx kit add my-sandbox ./team-tools-kit/</pre>
   </aside>
 </section>
 
-<!-- 19 · Quick start -->
+<!-- 18 · Quick start -->
 <section class="slide">
   <p class="kicker">Quick start</p>
   <h2>keystone-bedrock-kit</h2>
@@ -618,7 +586,7 @@ sbx run claude --kit /path/to/keystone-bedrock-kit/ /path/to/repo</pre>
   </aside>
 </section>
 
-<!-- 20 · spec.yaml -->
+<!-- 19 · spec.yaml -->
 <section class="slide">
   <p class="kicker">Quick start</p>
   <h2>One <code>spec.yaml</code>, four concepts</h2>
@@ -652,32 +620,7 @@ displayName: Keystone Bedrock endpoint
   </aside>
 </section>
 
-<!-- 21 · Adapting -->
-<section class="slide">
-  <p class="kicker">Quick start</p>
-  <h2>Adapting it for your gateway</h2>
-  <div class="cols mt">
-    <div class="card accent">
-      <h3>Change the hostname in 3 places</h3>
-      <ul>
-        <li><code>permissions.network.allow</code></li>
-        <li>the <code>inject</code> domain</li>
-        <li><code>ANTHROPIC_BASE_URL</code></li>
-      </ul>
-      <p class="muted">The <code>service</code> name matches the name passed to <code>sbx secret set</code>. Re-run <code>sbx kit validate</code> after any edit.</p>
-    </div>
-    <div class="card">
-      <h3>Why <code>schemaVersion: "2"</code>?</h3>
-      <p>v3 is a build-time format compiled into an OCI image. As of sbx v0.45.1, <code>sbx kit validate</code> on a local directory accepted only schema 1 or 2.</p>
-      <p>Built-in names like <code>claude</code> select v2 kits. A v3 mixin needs a v3 workload such as <code>docker.io/docker/sbx-kit-claude</code>.</p>
-    </div>
-  </div>
-  <aside class="notes">
-    <p>Source for the schema note: comments in the kit's own spec.yaml, cross-checked with the Kits docs.</p>
-  </aside>
-</section>
-
-<!-- 22 · CLI -->
+<!-- 20 · CLI -->
 <section class="slide">
   <p class="kicker">CLI cheat sheet</p>
   <h2>Everyday commands</h2>
@@ -698,7 +641,7 @@ sbx diagnose               <span class="c"># troubleshoot your install</span></p
   </aside>
 </section>
 
-<!-- 23 · Other features -->
+<!-- 21 · Other features -->
 <section class="slide">
   <p class="kicker">Also in the box</p>
   <h2>Other features worth knowing</h2>
@@ -713,7 +656,7 @@ sbx diagnose               <span class="c"># troubleshoot your install</span></p
   </aside>
 </section>
 
-<!-- 24 · Strengths / trade-offs -->
+<!-- 22 · Strengths / trade-offs -->
 <section class="slide">
   <p class="kicker">Assessment</p>
   <h2>Strengths and trade-offs</h2>
@@ -744,7 +687,7 @@ sbx diagnose               <span class="c"># troubleshoot your install</span></p
   </aside>
 </section>
 
-<!-- 25 · Sources -->
+<!-- 23 · Sources -->
 <section class="slide">
   <p class="kicker">Sources</p>
   <h2>Docs and repos</h2>
